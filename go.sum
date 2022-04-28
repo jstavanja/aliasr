@@ -19,6 +19,7 @@ github.com/charmbracelet/bubbletea v0.20.0 h1:/b8LEPgCbNr7WWZ2LuE/BV1/r4t5PyYJtD
 github.com/charmbracelet/bubbletea v0.20.0/go.mod h1:zpkze1Rioo4rJELjRyGlm9T2YNou1Fm4LIJQSa5QMEM=
 github.com/charmbracelet/charm v0.11.0 h1:0LNarK9NrduyA9cjwP+SfGQgy5t0IePrhk1rZHx/11M=
 github.com/charmbracelet/charm v0.11.0/go.mod h1:bBFHHhDkQ4p30z/BfoAA5R3y2ir8jNqm6BuPesjuQeM=
+github.com/charmbracelet/harmonica v0.1.0 h1:lFKeSd6OAckQ/CEzPVd2mqj+YMEubQ/3FM2IYY3xNm0=
 github.com/charmbracelet/harmonica v0.1.0/go.mod h1:KSri/1RMQOZLbw7AHqgcBycp8pgJnQMYYT8QZRqZ1Ao=
 github.com/charmbracelet/keygen v0.2.1 h1:H1yYTVe6qIDz+UILYXo6q+qLQNkvyXXA5KEhzyuEfzg=
 github.com/charmbracelet/keygen v0.2.1/go.mod h1:kFQ3Cvop12fXWX1K29vxDxV9x8ujG4wBSXq//GySSSk=

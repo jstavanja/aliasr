@@ -1,39 +1,45 @@
 package main
 
-import "log"
-import "github.com/charmbracelet/charm/kv"
+import (
+  "log"
+  "strings"
+
+  "github.com/charmbracelet/charm/kv"
+)
 
 func main() {
-  db, err := kv.OpenWithDefaults("my-db")
-
-  log.Println("hello")
+  // Open or create the aliasr database that will persist the user's data locally 
+  db, err := kv.OpenWithDefaults("aliasr-db")
 
   if err != nil {
     log.Fatal(err)
   }
 
-  log.Println("hello 2")
-
   defer db.Close()
 
+  // Sync the data from the database
   if err := db.Sync(); err != nil {
     log.Fatal(err)
   }
 
-  log.Println("hello 3")
+  // Set some test workspaces as an example
+  // if err := db.Set([]byte("workspaces"), []byte("test,bro,ski")); err != nil {
+  //   log.Fatal(err)
+  // }
 
-  if err := db.Set([]byte("fave-food"), []byte("gherkin")); err != nil {
-    log.Fatal(err)
-  }
+  // Get the persisted workspaces
+  v, err := db.Get([]byte("workspaces"))
 
-  log.Println("hello 4")
-
-  v, err := db.Get([]byte("fave-food"))
-
+  // If the workspaces weren't ever created, initialize them
   if err != nil {
-    log.Fatal(err)
+    db.Set([]byte("workspaces"), []byte(""))
+    v = []byte("")
   }
+  
+  // Create a slice with workspaces from the db string value
+  workspaces := strings.Split(string(v), ",")
 
-  log.Println(string(v))
-
+  for _, workspace := range workspaces {
+   log.Println(workspace)
+  }
 }
