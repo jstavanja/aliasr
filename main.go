@@ -28,11 +28,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case tea.KeyMsg:
       switch msg.String() {
         case "ctrl+c", "q":
+          if m.screen == "workspace-list" {
+            return m, tea.Quit
+          }
+
           if m.screen == "workspace-detail" {
             m.cursor = 0
             m.screen = "workspace-list"
-          } else {
-            return m, tea.Quit
+          }
+
+          if m.screen == "add-workspace" {
+            m.screen = "workspace-list"
+          }
+
+          if m.screen == "add-command" {
+            m.screen = "workspace-detail"
           }
 
         case "up", "k":
@@ -51,10 +61,39 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             m.commandsInCurrentWorkspace = getCommmandsForCurrentWorkspace(m)
             m.cursor = 0
             m.screen = "workspace-detail"
-          } else {
+          }
+          
+          if m.screen == "workspace-detail" {
             // TODO: get the command under the cursor and execute it, like:
             // exec.Command(m.commandsInCurrentWorkspace[m.cursor])
           }
+
+          if m.screen == "add-workspace" {
+            // TODO: add an input, read it and save the new workspace name
+            m.screen = "workspace-list"
+          }
+
+          if m.screen == "add-command" {
+            // TODO: add an input, read it and save the new command under the current workspace
+            m.screen = "workspace-detail"
+          }
+
+        case "n":
+          if m.screen == "workspace-list" {
+            m.screen = "add-workspace"
+          }
+          if m.screen == "workspace-detail" {
+            m.screen = "add-command"
+          }
+
+        case "x":
+          if m.screen == "workspace-list" {
+            // TODO: delete the workspace m.currentWorkspace
+          }
+          if m.screen == "workspace-detail" {
+            // TODO: delete the command under m.commandsInCurrentWorkspace[m.cursor]
+          }
+          // then, decrement the m.cursor if possible
       }
   }
 
@@ -85,7 +124,7 @@ func getCommmandsForCurrentWorkspace(m model) []string {
   return []string{}
 }
 
-func RenderWorkspaceListView(m model) string {
+func renderWorkspaceListView(m model) string {
   s := "Choose your workspace:\n\n"
 
   for i, choice := range m.workspaces {
@@ -96,14 +135,14 @@ func RenderWorkspaceListView(m model) string {
     s += fmt.Sprintf("%s %s\n", cursor, choice)
   }
 
-  // s += "\nPress n to add a new workspace."
+  s += "\nPress n to add a new workspace."
   // s += "\nPress x to delete the selected workspace."
   s += "\nPress q to quit."
 
   return s
 }
 
-func RenderWorkspaceDetailView(m model) string {
+func renderWorkspaceDetailView(m model) string {
   s := "[Workspace]: " + m.currentWorkspace + "\n"
   s += "\nChoose your command:\n"
 
@@ -117,20 +156,50 @@ func RenderWorkspaceDetailView(m model) string {
     s += fmt.Sprintf("%s %s\n", cursor, choice)
   }
 
-  // s += "\nPress n to add a new command."
+  s += "\nPress n to add a new command."
   // s += "\nPress x to delete the selected command."
   s += "\nPress q to see all workspaces."
 
   return s
 }
 
+func renderAddWorkspaceView(m model) string {
+  s := "Name your new workspace:\n\n"
+
+  s += "Some workspace"
+
+  s += "\n\nPress enter to add the workspace."
+  s += "\nPress q to abort adding a workspace."
+
+  return s
+}
+
+func renderAddCommandView(m model) string {
+  s := "Input your new command:\n\n"
+
+  s += "npm run todo"
+
+  s += "\n\nPress enter to add the command."
+  s += "\nPress q to abort adding a command."
+
+  return s
+}
+
 func (m model) View() string {
   if m.screen == "workspace-list" {
-    return RenderWorkspaceListView(m)
+    return renderWorkspaceListView(m)
   }
 
   if m.screen == "workspace-detail" {
-    return RenderWorkspaceDetailView(m)
+    return renderWorkspaceDetailView(m)
+  }
+
+  if m.screen == "add-workspace" {
+    return renderAddWorkspaceView(m)
+  }
+
+  if m.screen == "add-command" {
+    return renderAddCommandView(m)
   }
 
   return "ERROR: Application in unknown state."
