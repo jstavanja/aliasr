@@ -11,6 +11,8 @@ import (
 )
 
 type model struct {
+  screen string
+  currentWorkspace int
   workspaces []string
   cursor int
 }
@@ -24,7 +26,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     case tea.KeyMsg:
       switch msg.String() {
         case "ctrl+c", "q":
-          return m, tea.Quit
+          if m.screen == "workspace-detail" {
+            m.cursor = 0
+            m.screen = "workspace-list"
+          } else {
+            return m, tea.Quit
+          }
 
         case "up", "k":
           if m.cursor > 0 {
@@ -36,29 +43,66 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             m.cursor++
           }
 
-          case "enter", " ":
-            // TODO: make this enter a workspace
+        case "enter", " ":
+          if m.screen == "workspace-list" {
+            m.currentWorkspace = m.cursor
+            m.cursor = 0
+            m.screen = "workspace-detail"
+          } else {
+            // get the command under the cursor and execute it
+          }
       }
   }
 
   return m, nil
 }
 
-func (m model) View() string {
+func RenderWorkspaceListView(m model) string {
   s := "Choose your workspace:\n"
-  for i, choice := range m.workspaces {
 
+  for i, choice := range m.workspaces {
     cursor := " "
     if m.cursor == i {
-        cursor = ">"
+      cursor = ">"
     }
-
     s += fmt.Sprintf("%s %s\n", cursor, choice)
   }
 
   s += "\nPress q to quit.\n"
 
   return s
+}
+
+func RenderWorkspaceDetailView(m model) string {
+  // TODO: add the name of the workspace in the title of the screen
+  s := "Choose your command:\n"
+
+  // TODO: fetch commands for current workspace from the kv db
+  commands := []string{"npm run dev", "echo \"hello world\""}
+
+  for i, choice := range commands {
+    cursor := " "
+    if m.cursor == i {
+      cursor = ">"
+    }
+    s += fmt.Sprintf("%s %s\n", cursor, choice)
+  }
+
+  s += "\nPress q to see all workspaces.\n"
+
+  return s
+}
+
+func (m model) View() string {
+  if m.screen == "workspace-list" {
+    return RenderWorkspaceListView(m)
+  }
+
+  if m.screen == "workspace-detail" {
+    return RenderWorkspaceDetailView(m)
+  }
+
+  return "ERROR: Application in unknown state."
 }
 
 func main() {
@@ -94,6 +138,7 @@ func main() {
   workspaces := strings.Split(string(v), ",")
 
   initialModel := model{
+    screen: "workspace-list",
     workspaces: workspaces,
   }
 
