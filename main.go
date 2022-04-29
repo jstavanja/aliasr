@@ -1,13 +1,13 @@
 package main
 
 import (
-  "fmt"
-  "os"
-  "log"
-  "strings"
+	"fmt"
+	"log"
+	"os"
+	"strings"
 
-  "github.com/charmbracelet/charm/kv"
-  tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/charm/kv"
 )
 
 type model struct {
